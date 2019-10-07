@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "HuffGen.h"
 
 
 int freq[257];
@@ -114,41 +115,103 @@ char dataExtract(int * freq){
 	char data[256];
 }
 
-///////////Dynamic Array Functions//////////////////////
+// __________________________________________________ DYNAMIC ARRAY STRUCT (INT) __________________________________________________ //
 typedef struct {
   int *array;
   size_t used;
   size_t size;
-} Array;
+} ArrayInt;
 
-void initArray(Array *a, size_t initialSize) {
+void initArrayInt(ArrayInt *a, size_t initialSize) {
   a->array = (int *)malloc(initialSize * sizeof(int));
   a->used = 0;
   a->size = initialSize;
+
 }
 
-void insertArray(Array *a, int element) {
-  // a->used is the number of used entries, because a->array[a->used++] updates a->used only *after* the array has been accessed.
-  // Therefore a->used can go up to a->size 
+
+void insertArrayInt(ArrayInt *a, int element) {
+
   if (a->used == a->size) {
     a->size *= 2;
     a->array = (int *)realloc(a->array, a->size * sizeof(int));
+
   }
+
   a->array[a->used++] = element;
 }
 
-void freeArray(Array *a) {
+void freeArrayInt(ArrayInt *a) {
   free(a->array);
   a->array = NULL;
   a->used = a->size = 0;
-}
-////////////////////////////////////////////////////////
 
-/////////Int to Ascii Character function////////////////
-char int2Char(int num){
-    char * cad = malloc(12 * sizeof(char));
-	sprintf(cad, "%i", num);
-	return *cad;
+}
+
+void printArrayInt(ArrayInt *a){
+
+  for(int i = 0; i < a->used; i++)
+    printf(" El numero es %d \n", a->array[i]);
+
+}
+
+// __________________________________________________ DYNAMIC ARRAY STRUCT (CHAR)__________________________________________________ //
+
+typedef struct {
+  char *array;
+  size_t used;
+  size_t size;
+
+} ArrayChar;
+
+void initArrayChar(ArrayChar *a, size_t initialSize) {
+  a->array = (char *)malloc(initialSize * sizeof(char));
+  a->used = 0;
+  a->size = initialSize;
+
+}
+
+void insertArrayChar(ArrayChar *a, char element) {
+
+  if (a->used == a->size) {
+    a->size *= 2;
+    a->array = (char *)realloc(a->array, a->size * sizeof(char));
+
+  }
+
+  a->array[a->used++] = element;
+}
+
+void freeArrayChar(ArrayChar *a) {
+  free(a->array);
+  a->array = NULL;
+  a->used = a->size = 0;
+
+}
+
+void printArrayChar(ArrayChar *a){
+
+  for(int i = 0; i < a->used; i++)
+    printf(" El caracter es %c \n", a->array[i]);
+
+}
+
+//  __________________________________________________________________________________________________________________ //
+//  __________________________________________________________________________________________________________________ //
+//  __________________________________________________________________________________________________________________ //
+
+//Int to Character Function
+ArrayChar decimalToChar(ArrayInt *a){
+
+  ArrayChar listaChar;
+
+  initArrayChar(&listaChar, 1);
+
+  for(int i = 0; i < a->used; i++)
+    insertArrayChar(&listaChar, (char) a->array[i]);
+
+
+  return listaChar;
 }
 
 int main(int argc ,char *argv[])
@@ -217,32 +280,49 @@ int main(int argc ,char *argv[])
 	    }
 		
 	}
-	///-----------------------///////////////////////////Huffman Tree Generation////////////////----------------------///////////////////
+	// __________________________________________________ Huffman Tree Generation__________________________________________________ //
 	//Loop that copies all but the first number into another array
 	for (int i = 0; i < 256; i++)
     {
         copyOfFreq[i] = freq[i+1];
     }
 
-    Array freqArray;
-    Array numbers2Ascii;
+    ArrayInt freqArray;
+    ArrayInt numbers2Ascii;
+    ArrayChar dataArray;
 
-	initArray(&freqArray, 5);  // initially 5 elements
-	initArray(&numbers2Ascii, 5);
+	initArrayInt(&freqArray, 5);  // initially 5 elements
+	initArrayInt(&numbers2Ascii, 5);
 	for (int i = 0; i < 256; i++)
 		if(copyOfFreq[i] != 0){
-  			insertArray(&freqArray, copyOfFreq[i]);
-  			insertArray(&numbers2Ascii, i);
+  			insertArrayInt(&freqArray, copyOfFreq[i]);
+  			insertArrayInt(&numbers2Ascii, i);
 
  		}
+ 	dataArray = decimalToChar(&numbers2Ascii);
 
- 	char dataArray[numbers2Ascii.used];
- 	for(int i = 0; i < numbers2Ascii.used; i++)
- 	{
- 		dataArray[i] = int2Char(numbers2Ascii.array[i]);
- 	}
-	freeArray(&freqArray);
-	printf("%d\n", dataArray[4]);
+ 	
+	char data[dataArray.used] ;
+	for (int i = 0; i < dataArray.used; i++){
+		data[i] = dataArray.array[i];
+	}
+
+
+    int frequencyArr[freqArray.used] ;
+    for (int i = 0; i < freqArray.used; i++){
+		frequencyArr[i] = freqArray.array[i];
+	}
+
+
+
+    int size = sizeof(data)/sizeof(data[0]);
+    HuffmanCodes(data, frequencyArr, size);
+
+ 	
+	freeArrayInt(&freqArray);
+	freeArrayInt(&numbers2Ascii);
+	freeArrayChar(&dataArray);
+
 
 
 

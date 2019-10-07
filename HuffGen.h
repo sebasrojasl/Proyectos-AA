@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
  
@@ -208,13 +207,4 @@ void HuffmanCodes(char data[], int freq[], int size)
    /** Imprimir los codigos de Huffman usando el árbol de Huffman */
    int arr[MAX_TREE_HT], top = 0;
    printCodes(root, arr, top);
-}
- 
-/** Programa para probar y controlar las funciones anteriores */
-int main()
-{
-    char arr[] = {'j', 'u', 'a', 'n', 'i', 't','o','p','r','s','q','-'};
-    int freq[] = {1, 2, 3, 1, 2, 1,3,2,1,1,1,3};
-    int size = sizeof(arr)/sizeof(arr[0]);
-    HuffmanCodes(arr, freq, size);
 }
