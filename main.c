@@ -4,6 +4,8 @@
 
 
 int freq[257];
+int copyOfFreq[256];
+
 void fileListReader(int argc, char *argv[]){
 	//"lee" el archivo
 	FILE *file;
@@ -107,6 +109,47 @@ int fileExists(const char * filename){
     }
     return 0;
 }
+//Function that takes the freq list and returns the corresponding data.
+char dataExtract(int * freq){
+	char data[256];
+}
+
+///////////Dynamic Array Functions//////////////////////
+typedef struct {
+  int *array;
+  size_t used;
+  size_t size;
+} Array;
+
+void initArray(Array *a, size_t initialSize) {
+  a->array = (int *)malloc(initialSize * sizeof(int));
+  a->used = 0;
+  a->size = initialSize;
+}
+
+void insertArray(Array *a, int element) {
+  // a->used is the number of used entries, because a->array[a->used++] updates a->used only *after* the array has been accessed.
+  // Therefore a->used can go up to a->size 
+  if (a->used == a->size) {
+    a->size *= 2;
+    a->array = (int *)realloc(a->array, a->size * sizeof(int));
+  }
+  a->array[a->used++] = element;
+}
+
+void freeArray(Array *a) {
+  free(a->array);
+  a->array = NULL;
+  a->used = a->size = 0;
+}
+////////////////////////////////////////////////////////
+
+/////////Int to Ascii Character function////////////////
+char int2Char(int num){
+    char * cad = malloc(12 * sizeof(char));
+	sprintf(cad, "%i", num);
+	return *cad;
+}
 
 int main(int argc ,char *argv[])
 {
@@ -174,6 +217,38 @@ int main(int argc ,char *argv[])
 	    }
 		
 	}
+	///-----------------------///////////////////////////Huffman Tree Generation////////////////----------------------///////////////////
+	//Loop that copies all but the first number into another array
+	for (int i = 0; i < 256; i++)
+    {
+        copyOfFreq[i] = freq[i+1];
+    }
+
+    Array freqArray;
+    Array numbers2Ascii;
+
+	initArray(&freqArray, 5);  // initially 5 elements
+	initArray(&numbers2Ascii, 5);
+	for (int i = 0; i < 256; i++)
+		if(copyOfFreq[i] != 0){
+  			insertArray(&freqArray, copyOfFreq[i]);
+  			insertArray(&numbers2Ascii, i);
+
+ 		}
+
+ 	char dataArray[numbers2Ascii.used];
+ 	for(int i = 0; i < numbers2Ascii.used; i++)
+ 	{
+ 		dataArray[i] = int2Char(numbers2Ascii.array[i]);
+ 	}
+	freeArray(&freqArray);
+	printf("%d\n", dataArray[4]);
+
+
+
+
+  		
+
 	return 0;
 }
 
